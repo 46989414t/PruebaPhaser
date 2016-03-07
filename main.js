@@ -11,24 +11,26 @@ var mainState = (function (_super) {
         this.MAX_SPEED = 350; // pixels/second
         this.ACCELERATION = 250; // aceleración
         this.FUERZA_ROZAMIENTO = 100; // Aceleración negativa
+        this.DRAG = 100;
+        this.BOUNCE = 0.4;
+        this.ANGULAR_DRAG = this.DRAG * 1.3;
     }
     mainState.prototype.preload = function () {
         _super.prototype.preload.call(this);
         this.load.image('ufo', 'assets/UFOLow.png');
         this.load.image('pickup', 'assets/PickupLow.png');
-        this.load.image('background', 'assets/BackgroundLow.png');
+        //this.load.image('background', 'assets/BackgroundLow.png'    );
+        //cargar JSON
+        this.load.tilemap('tilemap', 'assets/mapa.json', null, Phaser.Tilemap.TILED_JSON);
+        this.load.image('tiles', 'assets/BackgroundLow.png');
         // Declaramos el motor de físicas que vamos a usar
         this.physics.startSystem(Phaser.Physics.ARCADE);
     };
     mainState.prototype.create = function () {
         _super.prototype.create.call(this);
-        var background;
-        background = this.add.sprite(0, 0, 'background');
-        var scale = this.world.height / background.height;
-        background.scale.setTo(scale, scale);
+        //var background;
+        //var background = this.add.sprite(0, 0, 'tilemap');
         this.ufo = this.add.sprite(this.world.centerX, this.world.centerY, 'ufo');
-        this.ufo.scale.setTo(scale - 0.05, scale - 0.05);
-        this.ufo.anchor.setTo(0.5, 0.5);
         // Para el movimiento del platillo con las teclas
         this.cursor = this.input.keyboard.createCursorKeys();
         // Activamos la fisica
@@ -40,7 +42,11 @@ var mainState = (function (_super) {
         //velocidad maxima, colisiones y rebote
         this.ufo.body.maxVelocity.setTo(this.MAX_SPEED, this.MAX_SPEED); // x, y
         this.ufo.body.collideWorldBounds = true;
-        this.ufo.body.bounce.setTo(2);
+        //this.ufo.body.bounce.setTo(2);
+        //para que haga los rebotes como dios manda
+        this.ufo.body.bounce.set(this.BOUNCE);
+        this.ufo.body.drag.setTo(this.DRAG, this.DRAG); // x, y
+        this.ufo.body.angularDrag = this.ANGULAR_DRAG;
     };
     mainState.prototype.update = function () {
         _super.prototype.update.call(this);
