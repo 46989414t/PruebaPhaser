@@ -1,9 +1,12 @@
 /// <reference path="phaser/phaser.d.ts"/>
 
+import Point = Phaser.Point;
 class mainState extends Phaser.State {
     game: Phaser.Game;
     private ufo:Phaser.Sprite;
     private cursor:Phaser.CursorKeys;
+    private walls:Phaser.TilemapLayer;
+    private map:Phaser.Tilemap;
 
     private MAX_SPEED = 350;    // pixels/second
     private ACCELERATION = 250; // aceleración
@@ -11,6 +14,8 @@ class mainState extends Phaser.State {
     private DRAG:number = 100;
     private BOUNCE:number = 0.4;
     private ANGULAR_DRAG:number = this.DRAG * 1.3;
+
+    private pickups:Phaser.Group;//las moneditas
 
     preload():void {
         super.preload();
@@ -27,11 +32,55 @@ class mainState extends Phaser.State {
         this.physics.startSystem(Phaser.Physics.ARCADE);
     }
 
+
+
     create():void {
         super.create();
+        this.createWalls();
+        this.createPlayer();
+        this.createPickupObjects();
         //var background;
 
         //var background = this.add.sprite(0, 0, 'tilemap');
+
+
+
+    }
+
+    private createPickupObjects():void {
+        this.pickups = this.add.group();
+        this.pickups.enableBody = true;
+/*        var positions:Point[] = [
+         new Point(300, 95),
+         new Point(190, 135), new Point(410, 135),
+         new Point(120, 200), new Point(480, 200),
+         new Point(95, 300), new Point(505, 300),
+         new Point(120, 405), new Point(480, 405),
+         new Point(190, 465), new Point(410, 465),
+         new Point(300, 505),
+         ];
+*/
+ //        for (var i = 0; i < positions.length; i++) {
+ //        var position = positions[i];
+         var pickup = new Pickup (this.game, 300, 95, 'pickup');
+         this.add.existing(pickup);
+
+         pickup.scale.setTo(0, 0);
+         this.add.tween(pickup.scale).to({x: 1, y: 1}, 300).start();
+
+         this.pickups.add(pickup);
+ //        }
+    }
+    getPickup(ufo:Phaser.Sprite, pickup:Phaser.Sprite) {                  //las colisiones del pickUp
+        var tween = this.add.tween(pickup.scale).to({x: 0, y: 0}, 50);
+        tween.onComplete.add(function () {
+            pickup.kill();
+        });
+        tween.start();
+    }
+    private createPlayer(){
+        this.pickups = this.add.group();
+        this.pickups.enableBody = true;
 
         this.ufo = this.add.sprite(this.world.centerX, this.world.centerY, 'ufo');
 
@@ -49,18 +98,29 @@ class mainState extends Phaser.State {
 
         //velocidad maxima, colisiones y rebote
         this.ufo.body.maxVelocity.setTo(this.MAX_SPEED, this.MAX_SPEED); // x, y
-        this.ufo.body.collideWorldBounds = true;
+        this.ufo.body.collideWorldBounds = true;//colisionar con los bordes del mundo
         //this.ufo.body.bounce.setTo(2);
 
         //para que haga los rebotes como dios manda
         this.ufo.body.bounce.set(this.BOUNCE);
         this.ufo.body.drag.setTo(this.DRAG, this.DRAG); // x, y
         this.ufo.body.angularDrag = this.ANGULAR_DRAG;
-
     }
+
+    private createWalls() {
+        this.map = this.game.add.tilemap('tilemap');
+        this.map.addTilesetImage('BackgroundLow', 'tiles');
+
+        var background = this.map.createLayer('fondo');//el nombre de la capa
+        this.walls = this.map.createLayer('paredes');//el nombre de la capa
+
+        this.map.setCollisionBetween(1, 100, true, 'paredes');
+    };
 
     update():void {
         super.update();
+        this.physics.arcade.collide(this.ufo, this.walls);//para que colisione con las paredes
+        this.physics.arcade.overlap(this.ufo, this.pickups, this.getPickup, null, this);//colisiona con el pickUp
 
         // Velocidad en el instante 0 del objeto
 
@@ -97,3 +157,17 @@ class SimpleGame {
 window.onload = () => {
     var game = new SimpleGame();
 };
+
+class Pickup extends Phaser.Sprite {
+
+    constructor(game:Phaser.Game, x:number, y:number, key:string|Phaser.RenderTexture|Phaser.BitmapData|PIXI.Texture) {
+        super(game, x, y, key);
+
+        this.anchor.setTo(0.5, 0.5);
+    }
+
+    update():void {
+        super.update();
+        this.angle += 1;
+    }
+}
