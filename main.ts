@@ -20,7 +20,7 @@ class mainState extends Phaser.State {
     preload():void {
         super.preload();
 
-        this.load.image('ufo', 'assets/UFOLow.png');
+        this.load.image('ufo', 'assets/assets2/personatgeGran2.png');
         this.load.image('pickup', 'assets/PickupLow.png');
         //this.load.image('background', 'assets/BackgroundLow.png'    );
 
@@ -121,6 +121,8 @@ class mainState extends Phaser.State {
         super.update();
         this.physics.arcade.collide(this.ufo, this.walls);//para que colisione con las paredes
         this.physics.arcade.overlap(this.ufo, this.pickups, this.getPickup, null, this);//colisiona con el pickUp
+
+
 
         // Velocidad en el instante 0 del objeto
 

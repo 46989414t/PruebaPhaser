@@ -18,7 +18,7 @@ var mainState = (function (_super) {
     }
     mainState.prototype.preload = function () {
         _super.prototype.preload.call(this);
-        this.load.image('ufo', 'assets/UFOLow.png');
+        this.load.image('ufo', 'assets/assets2/personatgeGran2.png');
         this.load.image('pickup', 'assets/PickupLow.png');
         //this.load.image('background', 'assets/BackgroundLow.png'    );
         //cargar JSON
