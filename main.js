@@ -18,12 +18,14 @@ var mainState = (function (_super) {
     }
     mainState.prototype.preload = function () {
         _super.prototype.preload.call(this);
-        this.load.image('ufo', 'assets/assets2/personatgeGran2.png');
+        //this.load.image('ufo', 'assets/assets2/personatgeGran.png');
+        //this.load.image('ufo', 'assets/coches/cocheAzul.png');
+        this.load.image('ufo', 'assets/coches/cocheRojo.png');
         this.load.image('pickup', 'assets/PickupLow.png');
         //this.load.image('background', 'assets/BackgroundLow.png'    );
         //cargar JSON
-        this.load.tilemap('tilemap', 'assets/mapa.json', null, Phaser.Tilemap.TILED_JSON);
-        this.load.image('tiles', 'assets/BackgroundLow.png');
+        this.load.tilemap('tilemap', 'assets/coches/circuit.json', null, Phaser.Tilemap.TILED_JSON);
+        this.load.image('tiles', 'assets/coches/circuito1.jpg');
         // Declaramos el motor de físicas que vamos a usar
         this.physics.startSystem(Phaser.Physics.ARCADE);
     };
@@ -87,10 +89,10 @@ var mainState = (function (_super) {
     };
     mainState.prototype.createWalls = function () {
         this.map = this.game.add.tilemap('tilemap');
-        this.map.addTilesetImage('BackgroundLow', 'tiles');
-        var background = this.map.createLayer('fondo'); //el nombre de la capa
-        this.walls = this.map.createLayer('paredes'); //el nombre de la capa
-        this.map.setCollisionBetween(1, 100, true, 'paredes');
+        this.map.addTilesetImage('circuito1', 'tiles'); //nombre en json
+        var background = this.map.createLayer('Pista'); //el nombre de la capa
+        this.walls = this.map.createLayer('Fuera'); //el nombre de la capa
+        this.map.setCollisionBetween(1, 100, true, 'Fuera');
     };
     ;
     mainState.prototype.update = function () {
@@ -120,7 +122,7 @@ var mainState = (function (_super) {
 })(Phaser.State);
 var SimpleGame = (function () {
     function SimpleGame() {
-        this.game = new Phaser.Game(600, 600, Phaser.AUTO, 'gameDiv');
+        this.game = new Phaser.Game(768, 561, Phaser.AUTO, 'gameDiv');
         this.game.state.add('main', mainState);
         this.game.state.start('main');
     }
